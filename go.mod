@@ -1,11 +1,8 @@
 module github.com/mikelangelon/loveletter
 
-go 1.17
+go 1.18
 
-require (
-	github.com/hajimehoshi/ebiten v1.12.12
-	github.com/hajimehoshi/ebiten/v2 v2.2.4
-)
+require github.com/hajimehoshi/ebiten/v2 v2.2.5
 
 require (
 	github.com/go-gl/glfw/v3.3/glfw v0.0.0-20210727001814-0db043d8d5be // indirect
