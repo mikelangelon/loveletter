@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "embed"
-	"github.com/hajimehoshi/ebiten/v2"
+	eb "github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	_ "image/png"
 )
@@ -13,7 +13,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
+func (g *Game) Draw(screen *eb.Image) {
 	ebitenutil.DebugPrint(screen, "Hellow, World!")
 }
 
@@ -22,9 +22,9 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
-	ebiten.SetWindowSize(640, 480)
-	ebiten.SetWindowTitle("Hello World!")
-	if err := ebiten.RunGame(&Game{}); err != nil {
+	eb.SetWindowSize(640, 480)
+	eb.SetWindowTitle("Hello World!")
+	if err := eb.RunGame(&Game{}); err != nil {
 		panic(err)
 	}
 }
