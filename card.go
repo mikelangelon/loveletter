@@ -32,6 +32,12 @@ type players struct {
 }
 
 type player struct {
-	ID    string
-	cards []*card
+	ID       string
+	cards    []*card
+	location location
+}
+
+type location struct {
+	x, y  float64
+	scale float64
 }
