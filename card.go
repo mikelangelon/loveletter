@@ -27,17 +27,33 @@ func (d *deck) getCard() *card {
 	return c
 }
 
-type players struct {
-	players []player
-}
-
 type player struct {
 	ID       string
 	cards    []*card
+	selected *card
 	location location
 }
 
 type location struct {
 	x, y  float64
 	scale float64
+}
+
+func (p *player) nextSelection() *card {
+	index := indexOf(p.cards, p.selected)
+	index++
+	index %= len(p.cards)
+	return p.cards[index]
+}
+
+func indexOf(cards []*card, c *card) int {
+	if c == nil {
+		return -1
+	}
+	for i, v := range cards {
+		if *v == *c {
+			return i
+		}
+	}
+	return -1
 }

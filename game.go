@@ -7,26 +7,53 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"image"
 	"log"
+	"time"
 )
 
 const (
 	screenW = 640
 	screenH = 480
 	scale   = 0.5
+
+	debouncer = 150 * time.Millisecond
 )
 
 type Game struct {
 	deck    *deck
 	players players
+	state   state
+
+	// To properly check input and avoid duplicates
+	lastClickAt time.Time
 }
 
 func (g *Game) Update() error {
-	return nil
+	switch g.state {
+	case startGame:
+		g.state = playerTurn
+		return nil
+	case playerTurn:
+		p := g.players.you()
+		if time.Since(g.lastClickAt) < debouncer {
+			return nil
+		}
+		if eb.IsKeyPressed(eb.KeyArrowRight) {
+			p.selected = p.nextSelection()
+			g.lastClickAt = time.Now()
+		}
+		if eb.IsKeyPressed(eb.KeyEnter) {
+			log.Printf("selecting card with number %d", p.selected.number)
+
+			g.state = cpuTurn
+			g.lastClickAt = time.Now()
+		}
+		return nil
+	default:
+		return nil
+	}
 }
 
 func (g *Game) Draw(screen *eb.Image) {
-	ebitenutil.DebugPrint(screen, "Hellow, World!")
-
 	for _, player := range g.players.players {
 		for i, v := range player.cards {
 			op := &eb.DrawImageOptions{}
@@ -34,6 +61,7 @@ func (g *Game) Draw(screen *eb.Image) {
 			op.GeoM.Translate(player.location.x+nextCard(i, player.location), player.location.y)
 
 			screen.DrawImage(v.image, op)
+			ebitenutil.DebugPrint(screen, fmt.Sprintf("%v", v.number))
 		}
 	}
 }
@@ -51,14 +79,14 @@ func newGame() *Game {
 	d := newDeck(eb.NewImageFromImage(img))
 	d.Shuffle()
 
-	var ps []player
+	var ps []*player
 	for i := 0; i < 4; i++ {
 		var player = player{
 			ID:       fmt.Sprintf("%s", i),
 			cards:    []*card{d.getCard(), d.getCard()},
 			location: getLocation(i, 3),
 		}
-		ps = append(ps, player)
+		ps = append(ps, &player)
 	}
 
 	return &Game{
@@ -66,6 +94,7 @@ func newGame() *Game {
 		players: players{
 			players: ps,
 		},
+		state: startGame,
 	}
 }
 
